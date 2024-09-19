@@ -1,27 +1,29 @@
 import nodemailer from 'nodemailer';
+import { envs } from '../config/env';
 
 // Configuración de Nodemailer
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: 'gmail', 
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: envs.SMTP_USER, 
+    pass: envs.SMTP_PASS, 
   },
 });
 
 export const sendEmail = async (to: string, subject: string, text: string, html: string) => {
+  console.log(subject)
   const mailOptions = {
-    from: process.env.SMTP_USER, // Remitente (tu Gmail)
-    to,                          // Destinatario
-    subject,                     // Asunto
-    text,                        // Texto sin formato
-    html,                        // Mensaje en formato HTML
+    from: envs.SMTP_USER, 
+    to,
+    subject,                  
+    text,                      
+    html,                        
   };
 
   try {
-    await transporter.sendMail(mailOptions); // Enviar el correo
-    console.log(`Email sent to ${to}`); // Confirmación en consola
+    await transporter.sendMail(mailOptions); 
+    console.log(`Email sent to ${to}`); 
   } catch (error) {
-    console.error(`Error sending email: ${error}`); // Manejo de errores
+    console.error(`Error sending email: ${error}`); 
   }
 };

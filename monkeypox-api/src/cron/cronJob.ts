@@ -6,12 +6,10 @@ import { getMapboxImage } from '../utils/mapbox';
 // Configuración del cron job para cada 10 segundos
 cron.schedule('*/10 * * * * *', async () => {
   try {
-    // Encontrar los casos que no han enviado correo aún
     const casesToSend = await Case.find({ isSent: false });
 
-    // Enviar correo por cada caso
     for (const caseEntry of casesToSend) {
-      const mapImageUrl = getMapboxImage(caseEntry.lat, caseEntry.lng);
+      const mapImageUrl = await getMapboxImage(caseEntry.lat, caseEntry.lng);
 
       const emailHtml = `
         <h1>Nuevo caso de Viruela del Mono</h1>
@@ -22,7 +20,7 @@ cron.schedule('*/10 * * * * *', async () => {
 
       // Enviar correo
       await sendEmail(
-        'mjcb003@gmail.com', // Cambia este valor
+        'mjcb003@gmail.com', // Correo de destino
         'Nuevo caso de Viruela del Mono',
         'Se ha registrado un nuevo caso',
         emailHtml

@@ -2,11 +2,12 @@ import { Request, Response } from 'express';
 import { Case } from '../models/case';
 import { sendEmail } from '../utils/mailer';
 import { getMapboxImage } from '../utils/mapbox';
+import { envs } from '../config/env';
 
 // Crear un nuevo caso
 export const createCase = async (req: Request, res: Response) => {
   try {
-    // Crear el nuevo caso con los datos del cuerpo de la solicitud
+    // Crear el nuevo caso
     const newCase = new Case(req.body);
     await newCase.save();
 
@@ -23,7 +24,7 @@ export const createCase = async (req: Request, res: Response) => {
 
     // Enviar el correo electrónico
     await sendEmail(
-      'mjcb003@gmail.com', // Cambia esto por el email de destino adecuado
+      envs.SMTP_USER, // Correo de destino
       'Nuevo caso de Viruela del Mono registrado',
       'Se ha registrado un nuevo caso de Viruela del Mono',
       emailHtml
@@ -32,8 +33,9 @@ export const createCase = async (req: Request, res: Response) => {
     // Respuesta exitosa con el nuevo caso creado
     res.status(201).json(newCase);
   } catch (error) {
-    // Manejo de errores
+    console.error('Error al crear caso y enviar correo:', error); // Log de errores más detallado
     res.status(500).json({ error: 'Failed to create case' });
+
   }
 };
 
@@ -43,7 +45,7 @@ export const getAllCases = async (req: Request, res: Response) => {
     const cases = await Case.find();
     res.json(cases);
   } catch (error) {
-    // Manejo de errores
+    console.error('Error al obtener todos los casos:', error);
     res.status(500).json({ error: 'Failed to fetch cases' });
   }
 };
@@ -56,7 +58,7 @@ export const getRecentCases = async (req: Request, res: Response) => {
     const cases = await Case.find({ creationDate: { $gte: oneWeekAgo } });
     res.json(cases);
   } catch (error) {
-    // Manejo de errores
+    console.error('Error al obtener casos recientes:', error);
     res.status(500).json({ error: 'Failed to fetch recent cases' });
   }
 };
@@ -67,7 +69,7 @@ export const updateCase = async (req: Request, res: Response) => {
     const updatedCase = await Case.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedCase);
   } catch (error) {
-    // Manejo de errores
+    console.error('Error al actualizar caso:', error);
     res.status(500).json({ error: 'Failed to update case' });
   }
 };
@@ -78,7 +80,7 @@ export const deleteCase = async (req: Request, res: Response) => {
     await Case.findByIdAndDelete(req.params.id);
     res.status(204).send();
   } catch (error) {
-    // Manejo de errores
+    console.error('Error al eliminar caso:', error);
     res.status(500).json({ error: 'Failed to delete case' });
   }
 };

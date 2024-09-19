@@ -5,8 +5,6 @@ import caseRoutes from './routes/caseRoutes';
 import './cron/cronJob';
 
 dotenv.config();
-console.log("Env" + process.env.SMTP_USER)
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -18,7 +16,7 @@ app.get('/', (req, res) => {
   res.send('Monkeypox API is running');
 });
 
-mongoose.connect(process.env.MONGO_URI!)
+mongoose.connect(process.env.MONGO_URL_DOCKER!)
   .then(() => {
     console.log('Connected to MongoDB');
     app.listen(PORT, () => {
